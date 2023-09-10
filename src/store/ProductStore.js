@@ -4,8 +4,8 @@ import axios from "axios";
 export const useProductStore = defineStore("products", {
   state: () => ({
     product: null,
-    loading: true,
-    error: Boolean,
+    loading: Boolean,
+    error: String,
   }),
   getters: {
     products: (state) => state.product,
@@ -14,10 +14,10 @@ export const useProductStore = defineStore("products", {
   },
   actions: {
     async getProducts() {
-      const data = await axios.get("/products");
+      const data = await axios.get("https://dummyjson.com/products");
       this.product = data.data?.products;
       this.loading = false;
-      this.error = false;
+      this.error = "";
       console.log(this.product);
     },
   },

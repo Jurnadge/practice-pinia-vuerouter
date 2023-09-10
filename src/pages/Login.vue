@@ -3,24 +3,32 @@ import Button from "../components/Button.vue";
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "../store/AuthStore";
 
 const router = useRouter();
+const store = useAuthStore();
 
 const form = ref({
-  email: "",
+  username: "",
   password: "",
 });
 
+const handleChange = (event, fieldName) => {
+  form[fieldName] = event.target.value;
+};
+
 const handleLogin = async () => {
   try {
-    await axios.post("/login"),
-      {
-        email: form.value.email,
-        password: form.value.password,
-      };
-    router.push("/");
+    await store.login(form.username, form.password); // Memanggil fungsi login dari store
+
+    // Jika login berhasil, alihkan pengguna ke halaman lain (misalnya, halaman beranda)
+    if (store.isLogin) {
+      // Jika isLogin true, pengguna berhasil login
+      router.push("/");
+    }
   } catch (error) {
-    console.log(error);
+    // Tangani kesalahan jika terjadi saat permintaan
+    console.error(error);
   }
 };
 </script>
@@ -33,15 +41,19 @@ const handleLogin = async () => {
     >
       <h1 class="text-2xl my-3 text-center">Login</h1>
       <input
-        type="email"
-        placeholder="Email"
-        v-model="form.email"
+        type="text"
+        placeholder="username"
+        name="username"
+        v-model="form.username"
+        @change="handleChange($event, 'username')"
         class="border rounded-md px-2 py-1 focus:ring-0 focus:outline-none focus:border-blue-400"
         required
       />
       <input
         type="password"
         placeholder="Password"
+        name="password"
+        @change="handleChange($event, 'password')"
         v-model="form.password"
         class="border rounded-md px-2 py-1 focus:ring-0 focus:outline-none focus:border-blue-400"
         required
@@ -50,7 +62,9 @@ const handleLogin = async () => {
         type="submit"
         btnName="Login"
         class="py-2 hover:scale-100 hover:shadow-transparent"
+        v-if="store.isLoading === false"
       />
+      <button v-else="store.isLoading === true" disabled>loading</button>
 
       <div class="text-center text-slate-400">
         <p class="cursor-pointer hover:text-black">
