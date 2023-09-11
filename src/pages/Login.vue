@@ -1,7 +1,6 @@
 <script setup>
 import Button from "../components/Button.vue";
 import { ref } from "vue";
-import axios from "axios";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "../store/AuthStore";
 
@@ -19,15 +18,12 @@ const handleChange = (event, fieldName) => {
 
 const handleLogin = async () => {
   try {
-    await store.login(form.username, form.password); // Memanggil fungsi login dari store
+    await store.login(form.username, form.password);
 
-    // Jika login berhasil, alihkan pengguna ke halaman lain (misalnya, halaman beranda)
     if (store.isLogin) {
-      // Jika isLogin true, pengguna berhasil login
       router.push("/");
     }
   } catch (error) {
-    // Tangani kesalahan jika terjadi saat permintaan
     console.error(error);
   }
 };

@@ -5,8 +5,8 @@ import { useRouter } from "vue-router";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
-    loading: false, // Mengubah "Boolean" ke "false"
-    error: "", // Mengubah "String" ke ""
+    loading: false,
+    error: "",
     isLogin: false,
     token: localStorage.getItem("token") || "",
   }),
@@ -14,7 +14,7 @@ export const useAuthStore = defineStore("auth", {
     userData: (state) => state.user,
     isLoading: (state) => state.loading,
     isError: (state) => state.error,
-    isAuthenticated: (state) => !!state.token, // Menambahkan getter isAuthenticated
+    isAuthenticated: (state) => !!state.token,
   },
   actions: {
     checkAuth() {
@@ -25,6 +25,7 @@ export const useAuthStore = defineStore("auth", {
         router.push("/login");
       }
     },
+
     async login(username, password) {
       try {
         const response = await axios.post(
@@ -48,15 +49,48 @@ export const useAuthStore = defineStore("auth", {
         console.log(error);
       }
     },
+
     logout() {
-      localStorage.removeItem("token");
       localStorage.removeItem("token");
       this.user = null;
       this.token = "";
       this.isLogin = false;
       const router = useRouter();
-      router.push("/login");
       window.alert("Anda telah berhasil logout.");
+      router.push("/login");
+    },
+
+    async register(
+      fullname,
+      username,
+      email,
+      password,
+      no_hp,
+      address,
+      gender
+    ) {
+      try {
+        const response = await axios.post(
+          "https://landtick-cuy.fly.dev/api/v1/register",
+          {
+            fullname: fullname,
+            username: username,
+            email: email,
+            password: password,
+            no_hp: no_hp,
+            address: address,
+            gender: gender,
+          }
+        );
+        if (response.status === 200) {
+          window.alert("you have been registered");
+          const router = useRouter();
+          router.push("/login");
+        }
+      } catch (error) {
+        window.alert(error);
+        console.log(error);
+      }
     },
   },
 });
